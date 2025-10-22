@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Stylish Web App</title>
+  <meta name="description" content="A compact, deployable single-file HTML app with modern styling for CI/CD demos." />
+
+  <!-- Google Fonts (fallback-safe) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0f1724; /* deep navy */
+      --card:#0b1220;
+      --muted:#9aa7c7;
+      --accent:#6ee7b7; /* mint */
+      --accent-2:#7dd3fc; /* sky */
+      --glass: rgba(255,255,255,0.04);
+      --radius:14px;
+      --max-width:1000px;
+      color-scheme: dark;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#071026 120%);}
+
+    .wrap{
+      max-width:var(--max-width);
+      margin:48px auto;
+      padding:28px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.7), inset 0 1px 0 rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    header{display:flex;align-items:center;gap:18px;margin-bottom:18px}
+    .logo{
+      width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      display:grid;place-items:center;color:#022126;font-weight:700;font-size:20px;box-shadow:0 6px 20px rgba(0,0,0,0.6)
+    }
+    h1{font-size:20px;margin:0;color:#f8fafc}
+    p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
+
+    .grid{
+      display:grid;grid-template-columns: 1fr 360px;gap:20px;margin-top:18px;align-items:start;
+    }
+
+    /* main card */
+    .card{background:var(--card);padding:18px;border-radius:var(--radius);box-shadow:0 8px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.02)}
+    .hero{display:flex;flex-direction:column;gap:12px}
+
+    .kpi-row{display:flex;gap:12px;margin-top:8px}
+    .kpi{flex:1;padding:12px;background:var(--glass);border-radius:12px}
+    .kpi b{display:block;color:#ecf3ff}
+    .kpi small{color:var(--muted)}
+
+    .controls{display:flex;gap:10px;margin-top:12px}
+    .btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;padding:10px 14px;border-radius:10px;color:#022126;font-weight:600;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    pre{background:rgba(0,0,0,0.25);padding:12px;border-radius:12px;color:var(--muted);overflow:auto}
+
+    /* right column */
+    .side{position:relative}
+    .card .section-title{font-size:13px;color:var(--muted);margin-bottom:8px}
+
+    .meta-list{display:flex;flex-direction:column;gap:10px}
+    .meta{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.015), transparent);}    
+
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+
+    /* responsive */
+    @media (max-width:880px){
+      .grid{grid-template-columns:1fr;}
+      .logo{width:48px;height:48px;font-size:18px}
+    }
+
+    /* small helper */
+    .badge{padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03);font-size:12px;color:var(--muted)}
+
+    /* subtle animation */
+    .pulse{animation:pulse 3s infinite}
+    @keyframes pulse{0%{transform:translateY(0)}50%{transform:translateY(-4px)}100%{transform:translateY(0)}}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">APP</div>
+      <div>
+        <h1>Stylish Web App — Ready for CI/CD</h1>
+        <p class="lead">Single-file HTML frontend you can build into a Docker image and deploy to Kubernetes. Includes a demo fetch to /api/hello.</p>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+        <span class="badge">v1.0.0</span>
+      </div>
+    </header>
+
+    <div class="grid">
+      <main class="card">
+        <section class="hero">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <h2 style="margin:0;color:#e6f6f0">Hello, visitor 👋</h2>
+              <p style="margin:6px 0 0;color:var(--muted)">This page is minimal, responsive and optimized for being containerized. Use the controls below to demo an API call.</p>
+            </div>
+            <div style="text-align:right">
+              <div class="badge">Production-ready look</div>
+            </div>
+          </div>
+
+          <div class="kpi-row">
+            <div class="kpi">
+              <b id="status">Status: —</b>
+              <small>App health from <code>/api/health</code></small>
+            </div>
+            <div class="kpi">
+              <b id="msg">Message: —</b>
+              <small>Message from <code>/api/hello</code></small>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button class="btn" id="btn-hello">Fetch /api/hello</button>
+            <button class="btn ghost" id="btn-health">Check /api/health</button>
+            <button class="btn ghost" id="btn-refresh">Clear</button>
+          </div>
+
+          <div style="margin-top:14px">
+            <div class="section-title">Response preview</div>
+            <pre id="output">No requests yet. Tip: Point the container to an API backend serving <code>/api/hello</code> and <code>/api/health</code>.</pre>
+          </div>
+
+        </section>
+
+        <footer>
+          <div>Instructions: Build this file into a static container (Nginx or simple Python server) and deploy. Keep the app's base URL configurable via the <code>BASE_URL</code> environment variable — the script below reads that.</div>
+        </footer>
+      </main>
+
+      <aside class="side card">
+        <div style="margin-bottom:12px">
+          <div class="section-title">Quick config</div>
+          <div class="meta-list">
+            <div class="meta"><span>Serve method</span><strong>Static (Nginx / Python)</strong></div>
+            <div class="meta"><span>Env var</span><strong>BASE_URL</strong></div>
+            <div class="meta"><span>Health</span><strong>/api/health</strong></div>
+            <div class="meta"><span>Demo</span><strong>/api/hello</strong></div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="section-title">Docker + Kubernetes tips</div>
+          <ul style="padding-left:18px;margin:8px 0;color:var(--muted)">
+            <li>Build image: <code>docker build -t youruser/app:tag .</code></li>
+            <li>Push: <code>docker push youruser/app:tag</code></li>
+            <li>Deploy: <code>kubectl set image deploy/app app=youruser/app:tag</code></li>
+          </ul>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="section-title">Metadata</div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <div style="flex:1;display:flex;flex-direction:column"><small style="color:var(--muted)">Author</small><strong>Garv</strong></div>
+            <div style="flex:1;display:flex;flex-direction:column"><small style="color:var(--muted)">License</small><strong>MIT</strong></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    /*
+      Simple client script:
+      - Reads BASE_URL from window.__BASE_URL__ (injected by server) or from env placeholder
+      - Falls back to relative paths so the page works when served alongside an API on same host.
+    */
+    (function(){
+      // Base url resolution (server can inject window.__BASE_URL__)
+      const DEFAULT = '';
+      const BASE = (window.__BASE_URL__ && window.__BASE_URL__.replace(/\/$/,'') ) || DEFAULT;
+
+      const qs = (sel) => document.querySelector(sel);
+      const out = qs('#output');
+      const set = (k,v) => qs(k).textContent = v;
+
+      function showJson(j){
+        out.textContent = JSON.stringify(j, null, 2);
+      }
+
+      async function fetchTo(path){
+        const url = BASE + path;
+        set('#status','Checking...');
+        try{
+          const res = await fetch(url, {cache:'no-store'});
+          const ct = res.headers.get('content-type') || '';
+          let body;
+          if (ct.includes('application/json')) body = await res.json();
+          else body = await res.text();
+
+          set('#status', res.ok ? 'OK' : 'Error '+res.status);
+          set('#msg', typeof body === 'object' ? (body.message || JSON.stringify(body)) : String(body).slice(0,120));
+          showJson({url,status:res.status,body});
+        }catch(err){
+          set('#status','Failed');
+          set('#msg', err.message || 'Network error');
+          showJson({error: String(err)});
+        }
+      }
+
+      qs('#btn-hello').addEventListener('click', ()=>fetchTo('/api/hello'));
+      qs('#btn-health').addEventListener('click', ()=>fetchTo('/api/health'));
+      qs('#btn-refresh').addEventListener('click', ()=>{ set('#status','—'); set('#msg','—'); out.textContent='No requests yet.' });
+
+      // optional: ping health on load
+      // fetchTo('/api/health');
+    })();
+  </script>
+
+</body>
+</html>
