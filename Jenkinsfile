@@ -32,6 +32,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 sh '''
+		export KUBECONFIG=/var/lib/jenkins/.kube/config
                 kubectl set image deployment/my-html-deployment my-html-container=$DOCKERHUB_USER/$IMAGE_NAME:$BUILD_NUMBER
                 kubectl rollout status deployment/my-html-deployment
                 '''
