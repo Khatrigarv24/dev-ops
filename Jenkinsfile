@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKERHUB_USER = 'quake3144'
         IMAGE_NAME = 'my-html-app'
+	WORKSPACE_DIR = '/var/lib/jenkins'
     }
 
     stages {
